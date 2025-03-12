@@ -51,6 +51,8 @@ parso==0.8.4
     #   jedi
 pip==24.0
     # via -r requirements.txt
+polars==1.24.0
+    # via -r requirements.txt
 psutil==7.0.0
     # via
     #   -r requirements.txt
