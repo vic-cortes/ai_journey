@@ -9,6 +9,7 @@ def libraries():
     from pathlib import Path
 
     import polars as pl
+
     return Path, pl
 
 
@@ -39,6 +40,7 @@ def _(df):
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
