@@ -10,3 +10,4 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = "sqlite:///app.db"
     ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+    TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
