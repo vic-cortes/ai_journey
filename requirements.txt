@@ -3,6 +3,7 @@ aiohttp==3.11.13
 aiosignal==1.3.2
 alembic==1.15.1
 annotated-types==0.7.0
+anthropic==0.49.0
 anyio==4.8.0
 asgiref==3.8.1
 asttokens==3.0.0
@@ -22,6 +23,8 @@ dataclasses-json==0.6.7
 decorator==5.2.1
 deprecated==1.2.18
 distro==1.9.0
+docker==7.1.0
+docstring-parser==0.16
 docutils==0.21.2
 durationpy==0.9
 executing==2.2.0
@@ -43,11 +46,13 @@ humanfriendly==10.0
 idna==3.10
 importlib-metadata==8.6.1
 importlib-resources==6.5.2
+instructor==1.7.7
 ipython==9.0.2
 ipython-pygments-lexers==1.1.1
 itsdangerous==2.2.0
 jedi==0.19.2
 jinja2==3.1.6
+jiter==0.8.2
 joblib==1.4.2
 jsonpatch==1.33
 jsonpointer==3.0.0
@@ -57,6 +62,7 @@ langchain-community==0.3.19
 langchain-core==0.3.45
 langchain-text-splitters==0.3.6
 langsmith==0.3.15
+loguru==0.7.3
 mako==1.3.9
 marimo==0.11.17
 markdown==3.7
@@ -64,6 +70,7 @@ markdown-it-py==3.0.0
 markupsafe==3.0.2
 marshmallow==3.26.1
 matplotlib-inline==0.1.7
+mcp==1.5.0
 mdurl==0.1.2
 mmh3==5.1.0
 monotonic==1.6
@@ -75,6 +82,7 @@ networkx==3.4.2
 numpy==2.2.3
 oauthlib==3.2.2
 onnxruntime==1.21.0
+openai==1.68.2
 opentelemetry-api==1.31.0
 opentelemetry-exporter-otlp-proto-common==1.31.0
 opentelemetry-exporter-otlp-proto-grpc==1.31.0
@@ -134,6 +142,7 @@ shellingham==1.5.4
 six==1.17.0
 sniffio==1.3.1
 sqlalchemy==2.0.39
+sse-starlette==2.2.1
 stack-data==0.6.3
 starlette==0.46.1
 sympy==1.13.1

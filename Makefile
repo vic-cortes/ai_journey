@@ -1,4 +1,4 @@
-.PHONY: all clean build install create-migrations
+.PHONY: all clean build install create-migrations library
 
 all: build
 
