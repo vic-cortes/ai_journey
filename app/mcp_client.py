@@ -4,10 +4,9 @@ from typing import Union, cast
 
 import anthropic
 from anthropic.types import MessageParam, TextBlock, ToolUnionParam, ToolUseBlock
+from config import Config
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
-
-from app.config import Config
 
 anthropic_client = anthropic.AsyncAnthropic(api_key=Config.ANTHROPIC_API_KEY)
 
@@ -20,7 +19,7 @@ class LlmModels:
 # Create server parameters for stdio connection
 server_params = StdioServerParameters(
     command="python",  # Executable
-    args=["./mcp_server.py"],  # Optional command line arguments
+    args=["app/mcp_server.py"],  # Optional command line arguments
     env=None,  # Optional environment variables
 )
 
@@ -119,5 +118,4 @@ class Chat:
 
 chat = Chat()
 
-asyncio.run(chat.run())
 asyncio.run(chat.run())
