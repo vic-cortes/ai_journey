@@ -145,6 +145,16 @@ class Chat:
 
             await self.process_query(session, query)
 
+    async def chat_loop_2(self, session: ClientSession, user_query: str):
+        self.messages.append(
+            MessageParam(
+                role="user",
+                content=user_query.strip(),
+            )
+        )
+
+        return await self.process_query(session, user_query)
+
     async def run(self):
         async with stdio_client(server_params) as (read, write):
             async with ClientSession(read, write) as session:
@@ -153,7 +163,15 @@ class Chat:
 
                 await self.chat_loop(session)
 
+    async def get_chat_response(self, user_query: str) -> str:
+        async with stdio_client(server_params) as (read, write):
+            async with ClientSession(read, write) as session:
+                # Initialize the connection
+                await session.initialize()
 
-chat = Chat()
+                await self.chat_loop_2(session, user_query)
 
-asyncio.run(chat.run())
+
+# chat = Chat()
+
+# asyncio.run(chat.run())
