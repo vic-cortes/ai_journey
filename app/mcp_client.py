@@ -4,14 +4,17 @@ from typing import Union, cast
 
 import anthropic
 from anthropic.types import MessageParam, TextBlock, ToolUnionParam, ToolUseBlock
-from dotenv import load_dotenv
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-load_dotenv()
+from app.config import Config
+
+anthropic_client = anthropic.AsyncAnthropic(api_key=Config.ANTHROPIC_API_KEY)
 
 
-anthropic_client = anthropic.AsyncAnthropic()
+class LlmModels:
+    CLAUDE_3_7_SONNET_LATEST = "claude-3-7-sonnet-latest"
+    CLAUDE_3_5_SONNET_LATEST = "claude-3-5-sonnet-latest"
 
 
 # Create server parameters for stdio connection
@@ -41,16 +44,17 @@ class Chat:
         ]
 
         # Initial Claude API call
-        res = await anthropic_client.messages.create(
-            model="claude-3-7-sonnet-latest",
+        response = await anthropic_client.messages.create(
+            model=LlmModels.CLAUDE_3_5_SONNET_LATEST,
             system=self.system_prompt,
-            max_tokens=8000,
+            max_tokens=8_000,
             messages=self.messages,
             tools=available_tools,
         )
 
         assistant_message_content: list[Union[ToolUseBlock, TextBlock]] = []
-        for content in res.content:
+
+        for content in response.content:
             if content.type == "text":
                 assistant_message_content.append(content)
                 print(content.text)
@@ -78,8 +82,8 @@ class Chat:
                     }
                 )
                 # Get next response from Claude
-                res = await anthropic_client.messages.create(
-                    model="claude-3-7-sonnet-latest",
+                response = await anthropic_client.messages.create(
+                    model=LlmModels.CLAUDE_3_5_SONNET_LATEST,
                     max_tokens=8000,
                     messages=self.messages,
                     tools=available_tools,
@@ -87,10 +91,10 @@ class Chat:
                 self.messages.append(
                     {
                         "role": "assistant",
-                        "content": getattr(res.content[0], "text", ""),
+                        "content": getattr(response.content[0], "text", ""),
                     }
                 )
-                print(getattr(res.content[0], "text", ""))
+                print(getattr(response.content[0], "text", ""))
 
     async def chat_loop(self, session: ClientSession):
         while True:
@@ -115,4 +119,5 @@ class Chat:
 
 chat = Chat()
 
+asyncio.run(chat.run())
 asyncio.run(chat.run())
