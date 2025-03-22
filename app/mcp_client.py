@@ -4,6 +4,7 @@ from typing import Union, cast
 
 import anthropic
 from anthropic.types import MessageParam, TextBlock, ToolUnionParam, ToolUseBlock
+from anthropic.types.message import Message
 from config import Config
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
@@ -28,10 +29,38 @@ server_params = StdioServerParameters(
 class Chat:
     messages: list[MessageParam] = field(default_factory=list)
 
-    system_prompt: str = """You are a master SQLite assistant. 
-    Your job is to use the tools at your dispoal to execute SQL queries and provide the results to the user."""
+    system_prompt: str = """
+        You are an expert SQLite assistant whose primary function is to execute SQL queries and provide 
+        relevant information to users. Follow these guidelines:
+
+        1. DATA SECURITY:
+        - Do not reveal sensitive database information (table names, users, fields) unless specifically requested by the user.
+        - For ambiguous questions, ask for clarification instead of displaying confidential information.
+
+        2. QUERIES AND RESPONSES:
+        - Execute SQL queries requested using the available tools.
+        - Present results clearly and in a structured manner.
+        - For complex queries, briefly explain your approach.
+
+        3. PROACTIVE ASSISTANCE:
+        - Help refine imprecise or poorly structured queries.
+        - Suggest optimizations when appropriate.
+        - Provide query examples when the user needs guidance.
+
+        4. ACCEPTABLE REQUEST TYPES:
+        - "Give me information about..." (requires specificity)
+        - "Calculate the average of..."
+        - "Show records that..."
+        - "How many users have...?"
+        - "Execute this query: [SQL]"
+
+        5. PRIVACY:
+        - Confirm before executing queries that might expose sensitive data.
+        - Remember to only execute SQL queries within the permitted context.
+   """
 
     async def process_query(self, session: ClientSession, query: str) -> None:
+        print(f"*** {self.messages = } ***")
         response = await session.list_tools()
         available_tools: list[ToolUnionParam] = [
             {
@@ -53,10 +82,14 @@ class Chat:
 
         assistant_message_content: list[Union[ToolUseBlock, TextBlock]] = []
 
+        all_message_content = []
+
         for content in response.content:
+
             if content.type == "text":
                 assistant_message_content.append(content)
-                print(content.text)
+                all_message_content.append(content)
+
             elif content.type == "tool_use":
                 tool_name = content.name
                 tool_args = content.input
@@ -83,7 +116,7 @@ class Chat:
                 # Get next response from Claude
                 response = await anthropic_client.messages.create(
                     model=LlmModels.CLAUDE_3_5_SONNET_LATEST,
-                    max_tokens=8000,
+                    max_tokens=8_000,
                     messages=self.messages,
                     tools=available_tools,
                 )
@@ -93,7 +126,12 @@ class Chat:
                         "content": getattr(response.content[0], "text", ""),
                     }
                 )
-                print(getattr(response.content[0], "text", ""))
+
+                all_message_content.append(getattr(response.content[0], "text", ""))
+
+            final_message = "\n".join([content.text for content in all_message_content])
+
+            print(final_message)
 
     async def chat_loop(self, session: ClientSession):
         while True:

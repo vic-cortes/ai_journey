@@ -10,7 +10,9 @@ mcp = FastMCP("Demo")
 
 @mcp.tool()
 def query_data(sql: str) -> str:
-    """Execute SQL queries safely"""
+    """
+    Execute SQL queries safely
+    """
     logger.info(f"Executing SQL query: {sql}")
     conn = sqlite3.connect("./database.db")
     try:
