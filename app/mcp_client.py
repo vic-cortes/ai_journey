@@ -1,4 +1,5 @@
 import asyncio
+import re
 from dataclasses import dataclass, field
 from typing import Union, cast
 
@@ -59,8 +60,7 @@ class Chat:
         - Remember to only execute SQL queries within the permitted context.
    """
 
-    async def process_query(self, session: ClientSession, query: str) -> None:
-        print(f"*** {self.messages = } ***")
+    async def process_query(self, session: ClientSession, query: str) -> str:
         response = await session.list_tools()
         available_tools: list[ToolUnionParam] = [
             {
@@ -88,7 +88,7 @@ class Chat:
 
             if content.type == "text":
                 assistant_message_content.append(content)
-                all_message_content.append(content)
+                all_message_content.append(content.text)
 
             elif content.type == "tool_use":
                 tool_name = content.name
@@ -120,18 +120,14 @@ class Chat:
                     messages=self.messages,
                     tools=available_tools,
                 )
-                self.messages.append(
-                    {
-                        "role": "assistant",
-                        "content": getattr(response.content[0], "text", ""),
-                    }
-                )
+                text_response = getattr(response.content[0], "text", "")
+                all_message_content.append(f"\n{text_response}")
 
-                all_message_content.append(getattr(response.content[0], "text", ""))
+                self.messages.append({"role": "assistant", "content": text_response})
 
-            final_message = "\n".join([content.text for content in all_message_content])
+        final_message = "\n".join([text for text in all_message_content])
 
-            print(final_message)
+        return final_message
 
     async def chat_loop(self, session: ClientSession):
         while True:
@@ -169,9 +165,9 @@ class Chat:
                 # Initialize the connection
                 await session.initialize()
 
-                await self.chat_loop_2(session, user_query)
+                return await self.chat_loop_2(session, user_query)
 
 
-# chat = Chat()
-
-# asyncio.run(chat.run())
+if __name__ == "__main__":
+    chat = Chat()
+    asyncio.run(chat.run())

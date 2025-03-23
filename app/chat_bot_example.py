@@ -1,20 +1,10 @@
-#!/usr/bin/env python
-# pylint: disable=unused-argument
-# This program is dedicated to the public domain under the CC0 license.
-
-"""
-Simple Bot to handle '(my_)chat_member' updates.
-Greets new users & keeps track of which chats the bot is in.
-
-Usage:
-Press Ctrl-C on the command line or send a signal to the process to stop the
-bot.
-"""
-
+import asyncio
 import logging
+import re
 from typing import Optional
 
 from config import Config
+from mcp_client import Chat as McPChat
 from telegram import Chat, ChatMember, ChatMemberUpdated, Update
 from telegram.constants import ParseMode
 from telegram.ext import (
@@ -26,7 +16,7 @@ from telegram.ext import (
     filters,
 )
 
-# Enable logging
+mcp_chat = McPChat()
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -36,6 +26,27 @@ logging.basicConfig(
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
+
+
+def escape_markdown_v2(text):
+    # Escapar caracteres especiales de MarkdownV2
+    escape_chars = r"_*[]()~`>#+-=|{}.!"
+    return re.sub(f"([{re.escape(escape_chars)}])", r"\\\1", text)
+
+
+def format_with_markdown_v2(text):
+    """
+    Aplica formato de Markdown y escapa caracteres especiales.
+    Esta función asume que el texto no contiene formato Markdown previamente.
+    """
+    # Primero escapamos todos los caracteres especiales
+    escaped_text = escape_markdown_v2(text)
+
+    # Ahora puedes añadir formato de forma segura
+    # Por ejemplo, si quisieras añadir negrita a una palabra específica:
+    # escaped_text = escaped_text.replace("palabra", "*palabra*")
+
+    return escaped_text
 
 
 def extract_status_change(
@@ -172,7 +183,12 @@ async def start_private_chat(
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Echo the user message."""
-    await update.message.reply_text(update.message.text)
+    chat_response = await mcp_chat.get_chat_response(update.message.text)
+
+    await update.message.reply_text(
+        escape_markdown_v2(chat_response),
+        parse_mode=ParseMode.MARKDOWN_V2,
+    )
 
 
 def main() -> None:
