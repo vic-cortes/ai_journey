@@ -9,7 +9,6 @@ def libraries():
     from pathlib import Path
 
     import polars as pl
-
     return Path, pl
 
 
@@ -33,14 +32,13 @@ def _(filename, pl):
 @app.cell
 def _(df):
     df.head()
-    df.columns
+    ", ".join([el for el in df.columns])
     return
 
 
 @app.cell
 def _():
     import marimo as mo
-
     return (mo,)
 
 
@@ -49,7 +47,7 @@ def _(mo):
     mo.md(
         r"""
         # Busqueda
-
+    
         Es importanre filtrar la información por entidad, y municipio. Es necesario hacer uso de los datos abiertos del INEGI
         """
     )
