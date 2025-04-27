@@ -1,4 +1,4 @@
-.PHONY: all clean build install create-migrations library
+.PHONY: all clean build install create-migrations library install_all
 
 all: build
 
@@ -25,3 +25,7 @@ else
 	@echo "Creating migrations for Api"
 	alembic revision --autogenerate -m "${message}"
 endif
+
+install_all:
+	@echo "Installing all dependencies..."
+	uv pip install -r requirements.lock
