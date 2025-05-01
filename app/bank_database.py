@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 
+from config import Config
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, RunContext
+from pydantic_ai.models.openai import OpenAIModel
+from pydantic_ai.providers.openai import OpenAIProvider
 
 
 class DatabaseConn:
@@ -36,8 +39,11 @@ class SupportOutput(BaseModel):
     risk: int = Field(description="Risk level of query", ge=0, le=10)
 
 
+# model = OpenAIModel("openai:gpt-4o", api_key=Config.OPENAI_API_KEY)
+model = OpenAIProvider("openai:gpt-4o", api_key=Config.OPENAI_API_KEY)
+
 support_agent = Agent(
-    "openai:gpt-4o",
+    model,
     deps_type=SupportDependencies,
     output_type=SupportOutput,
     system_prompt=(
