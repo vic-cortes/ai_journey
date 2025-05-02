@@ -485,7 +485,7 @@ onnxruntime==1.21.0
     # via
     #   -r requirements.txt
     #   chromadb
-openai==1.76.0
+openai==1.76.2
     # via
     #   -r requirements.txt
     #   instructor

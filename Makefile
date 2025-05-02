@@ -12,6 +12,10 @@ install: library
 	@echo "Installing the project..."
 	uv pip install $(library)
 
+uninstall: library
+	@echo "Installing the project..."
+	uv pip uninstall $(library)
+
 compile-pip:
 	@echo "Compiling the project..."
 	uv pip freeze > requirements.txt 
